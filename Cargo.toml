@@ -1,0 +1,20 @@
+[package]
+name = "zwm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+color-eyre = "0.6.2"
+nix = { version = "0.25.0", default-features = false, features = ["signal"] }
+snafu = "0.7.1"
+tracing = "0.1.36"
+tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
+xcb = "1.1.1"
+
+[profile.release]
+strip = true
+opt-level = "z"
+lto = true
+codegen-units = 1
+debug = false
+panic = "abort"

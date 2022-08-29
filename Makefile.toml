@@ -1,0 +1,8 @@
+[tasks.release]
+script = [
+    "cargo build --release",
+    "upx --best --lzma target/release/zwm",
+    "echo '\nRelease target info'",
+    "du -hs target/release/zwm",
+    "echo"
+]
