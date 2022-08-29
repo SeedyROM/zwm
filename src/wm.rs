@@ -5,6 +5,7 @@ use xcb::{x, Connection};
 
 use crate::events::EventHandler;
 
+/// The main window manager struct.
 pub struct Wm {
     connection: Connection,
     #[allow(dead_code)]
@@ -55,6 +56,7 @@ impl Wm {
         Ok(())
     }
 
+    /// Start the event loop.
     pub fn run(&mut self) -> Result<()> {
         loop {
             let event = self.connection.wait_for_event()?;

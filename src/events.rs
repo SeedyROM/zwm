@@ -2,8 +2,10 @@ use color_eyre::Result;
 use tracing::trace;
 use xcb::{self, x};
 
+/// Abstraction to handle incoming events from the X server.
 #[allow(unused_variables)]
 pub trait EventHandler {
+    /// Dispatch our event handlers based on the incoming event.
     fn dispatch(&mut self, event: xcb::Event) -> Result<()> {
         match event {
             xcb::Event::X(event) => {
