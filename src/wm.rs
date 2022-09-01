@@ -6,9 +6,9 @@ use xcb::{x, Connection};
 use crate::{atoms::AtomManager, events::EventHandler};
 
 /// The main window manager struct.
+#[allow(dead_code)]
 pub struct Wm {
     connection: Connection,
-    #[allow(dead_code)]
     screen_number: i32,
     screen: x::ScreenBuf,
     atom_manager: AtomManager,

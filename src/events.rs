@@ -4,13 +4,20 @@ use xcb::{self, x};
 
 /// Abstraction to handle incoming events from the X server.
 #[allow(unused_variables)]
+#[allow(missing_docs)]
 pub trait EventHandler {
     /// Dispatch our event handlers based on the incoming event.
     fn dispatch(&mut self, event: xcb::Event) -> Result<()> {
         match event {
             xcb::Event::X(event) => {
-                trace!("Received event: {:?}", event);
+                // Ignore motion notify events for now to unclutter the tracing output.
+                match event {
+                    x::Event::MotionNotify(_) => (),
+                    _ => trace!("Received event: {:?}", event),
+                };
 
+                // Handle all known/manager event types.
+                // TODO: We probably don't need all of these, but fuck it!
                 match event {
                     x::Event::ButtonPress(event) => self.handle_button_press(&event),
                     x::Event::ClientMessage(event) => self.handle_client_message(&event),

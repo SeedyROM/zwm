@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use color_eyre::Result;
+use tracing::trace;
 use xcb::x;
 
 static SUPPORTED_ATOMS: &[(Atom, &str)] = &[
@@ -26,7 +27,7 @@ static SUPPORTED_ATOMS: &[(Atom, &str)] = &[
     (Atom::Net(NetAtom::NetClientList), "_NET_CLIENT_LIST"),
 ];
 
-#[derive(Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum WMAtom {
     WMProtocols,
     WMDelete,
@@ -34,7 +35,7 @@ pub enum WMAtom {
     WMTakeFocus,
 }
 
-#[derive(Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum NetAtom {
     NetActiveWindow,
     NetSupported,
@@ -47,7 +48,7 @@ pub enum NetAtom {
     NetClientList,
 }
 
-#[derive(Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum Atom {
     Utf8String,
     WM(WMAtom),
@@ -66,7 +67,9 @@ impl AtomManager {
     }
 
     pub fn setup(&mut self, connection: &xcb::Connection) -> Result<()> {
+        trace!("Adding ICCCM EWMH atoms");
         for (atom, name) in SUPPORTED_ATOMS.iter() {
+            trace!("Adding atom {} at key {:?}", name, atom);
             let request = connection.send_request(&x::InternAtom {
                 only_if_exists: false,
                 name: name.as_bytes(),
@@ -76,7 +79,7 @@ impl AtomManager {
 
             self.atoms.insert(*atom, reply.atom());
         }
-
+        trace!("Added ICCCM EWMH atoms");
         Ok(())
     }
 }
