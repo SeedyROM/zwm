@@ -3,7 +3,7 @@ use nix::sys::signal::{signal, SigHandler, Signal};
 use tracing::{info, trace};
 use xcb::{x, Connection};
 
-use crate::events::EventHandler;
+use crate::{atoms::AtomManager, events::EventHandler};
 
 /// The main window manager struct.
 pub struct Wm {
@@ -11,6 +11,7 @@ pub struct Wm {
     #[allow(dead_code)]
     screen_number: i32,
     screen: x::ScreenBuf,
+    atom_manager: AtomManager,
 }
 
 impl Wm {
@@ -44,13 +45,19 @@ impl Wm {
             connection,
             screen_number,
             screen,
+            atom_manager: AtomManager::new(),
         })
     }
 
     /// Setup the window manager.
-    pub fn setup(&self) -> Result<()> {
+    pub fn setup(&mut self) -> Result<()> {
+        // Ensure we're the only WM running.
         self.check_sole_wm()?;
+        // Setup zombie child process reaping.
         self.setup_sigchld_handler()?;
+        // Setup EWMH and ICCCM atoms.
+        self.atom_manager.setup(&self.connection)?;
+        // Configure the root window to redirect us events instead of passing them upstream.
         self.setup_root_window()?;
 
         Ok(())
@@ -88,6 +95,7 @@ impl Wm {
     /// Modify the root window to redirect events to us.
     fn setup_root_window(&self) -> Result<()> {
         trace!("Setting up the root window");
+
         // Change root window attributes.
         self.connection
             .send_and_check_request(&x::ChangeWindowAttributes {
@@ -112,8 +120,23 @@ impl Wm {
 }
 
 impl EventHandler for Wm {
-    fn handle_map_request(&mut self, event: &x::MapRequestEvent) -> Result<()> {
-        info!("Received MapRequestEvent: {:?}", event);
+    fn handle_create_notify(&mut self, event: &x::CreateNotifyEvent) -> Result<()> {
+        let window = event.window();
+
+        self.connection
+            .send_and_check_request(&x::ChangeWindowAttributes {
+                window,
+                value_list: &[x::Cw::BorderPixel(0xFF0000)],
+            })?;
+        self.connection
+            .send_and_check_request(&x::ConfigureWindow {
+                window,
+                value_list: &[x::ConfigWindow::BorderWidth(10)],
+            })?;
+
+        self.connection
+            .send_and_check_request(&x::MapWindow { window })?;
+
         Ok(())
     }
 }

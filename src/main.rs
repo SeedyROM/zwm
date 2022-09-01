@@ -3,6 +3,7 @@ use tracing::info;
 
 use crate::wm::Wm;
 
+pub mod atoms;
 pub mod env;
 pub mod events;
 pub mod wm;
@@ -17,6 +18,10 @@ fn main() -> Result<()> {
     wm.run()?;
 
     info!("Shutting down zwm");
+
+    drop(wm);
+
+    info!("Goodbye from zwm!");
 
     Ok(())
 }

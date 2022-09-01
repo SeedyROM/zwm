@@ -16,6 +16,7 @@ pub trait EventHandler {
                     x::Event::ClientMessage(event) => self.handle_client_message(&event),
                     x::Event::ConfigureRequest(event) => self.handle_configure_request(&event),
                     x::Event::ConfigureNotify(event) => self.handle_configure_notify(&event),
+                    x::Event::CreateNotify(event) => self.handle_create_notify(&event),
                     x::Event::DestroyNotify(event) => self.handle_destroy_notify(&event),
                     x::Event::EnterNotify(event) => self.handle_enter_notify(&event),
                     x::Event::Expose(event) => self.handle_expose(&event),
@@ -49,6 +50,10 @@ pub trait EventHandler {
     }
 
     fn handle_configure_notify(&mut self, event: &x::ConfigureNotifyEvent) -> Result<()> {
+        Ok(())
+    }
+
+    fn handle_create_notify(&mut self, event: &x::CreateNotifyEvent) -> Result<()> {
         Ok(())
     }
 

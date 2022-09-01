@@ -6,3 +6,6 @@ script = [
     "du -hs target/release/zwm",
     "echo"
 ]
+
+[tasks.testbench]
+script = ["./scripts/testbench.sh"]
