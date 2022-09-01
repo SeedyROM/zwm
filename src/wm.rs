@@ -55,8 +55,16 @@ impl Wm {
         self.check_sole_wm()?;
         // Setup zombie child process reaping.
         self.setup_sigchld_handler()?;
+
+        // TODO: Setup cursors
+        // TODO: Setup appearence
+        // TODO: Setup UI for global WM / aka bars?
+
         // Setup EWMH and ICCCM atoms.
         self.atom_manager.setup(&self.connection)?;
+
+        // TODO: Test WM features work.
+
         // Configure the root window to redirect us events instead of passing them upstream.
         self.setup_root_window()?;
 
