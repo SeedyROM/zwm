@@ -18,13 +18,13 @@ impl Wm {
     /// Create a new window manager and setup the connect to the X server.
     pub fn new(display_name: Option<&str>) -> Result<Self> {
         info!(
-            "Connecting to screen at display {}",
+            "Connecting to screen at display \"{}\"",
             display_name.unwrap_or("DEFAULT")
         );
 
         let (connection, screen_number) = Connection::connect(display_name).map_err(|err| {
             eyre!(
-                "Connection to display {} failed: {}",
+                "Connecting to display \"{}\" failed: {}",
                 display_name.unwrap_or("DEFAULT"),
                 err
             )
@@ -33,11 +33,11 @@ impl Wm {
         let screen = setup
             .roots()
             .nth(screen_number as usize)
-            .ok_or_else(|| eyre!("Failed to get screen {}", screen_number))?
+            .ok_or_else(|| eyre!("Failed to get screen \"{}\"", screen_number))?
             .to_owned();
 
         info!(
-            "Connected to screen at display {}",
+            "Connected to screen at display \"{}\"",
             display_name.unwrap_or("DEFAULT")
         );
 
